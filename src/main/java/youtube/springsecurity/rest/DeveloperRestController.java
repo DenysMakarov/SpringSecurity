@@ -1,5 +1,6 @@
 package youtube.springsecurity.rest;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import youtube.springsecurity.model.Developer;
 
@@ -23,18 +24,21 @@ public class DeveloperRestController {
     }
 
     @GetMapping("/{id}")
+//    @PreAuthorize("hasAnyAuthority('developer:read')")
     public Developer getById(@PathVariable Long id) {
         return DEVELOPERS.stream().filter(d -> d.getId().equals(id))
                 .findFirst().orElse(null);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('developer:write')")
     public Developer add(@RequestBody Developer developer){
         this.DEVELOPERS.add(developer);
         return developer;
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('developer:write')")
     public void remove(@PathVariable Long id){
         this.DEVELOPERS.removeIf(d -> d.getId().equals(id));
     }
