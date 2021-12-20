@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import youtube.springsecurity.model.Permission;
 import youtube.springsecurity.model.Role;
 
@@ -41,10 +43,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .antMatchers(HttpMethod.DELETE, "/api/**").hasAuthority(Permission.DEVELOPER_WRITE.getPermission())
                 // ------------------------------------------------------------
 
-                .anyRequest()// каждый запрос должен быть аутитифицирован
+                .anyRequest()// каждый запрос должен быть аутит ифицирован
                 .authenticated()
                 .and()
-                .httpBasic()// c помощью base64
+//                .httpBasic() // c помощью base64
+                .formLogin() // вместо .httpBasic() -> отправляет form.html
+                .loginPage("/auth/login").permitAll()
+                .defaultSuccessUrl("/auth/success", true) // если все ок то перенаправляет на эту стр
+                .and()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/auth/logout", "POST"))
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl("/auth/login")
+
         ;
     }
 
